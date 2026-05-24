@@ -1,0 +1,384 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>测试水平</title>
+  <meta name="theme-color" content="#2563eb">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="icon" href="/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/icon.svg">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, "Microsoft YaHei", sans-serif;
+      background: #f6f7fb;
+      color: #1f2937;
+    }
+
+    .page {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+    }
+
+    .panel {
+      width: 100%;
+      max-width: 760px;
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 28px;
+      box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+    }
+
+    h1 {
+      margin: 0 0 20px;
+      font-size: 30px;
+    }
+
+    .meta {
+      margin: 0 0 16px;
+      color: #667085;
+      line-height: 1.6;
+    }
+
+    label {
+      display: block;
+      margin: 16px 0 8px;
+      font-weight: 700;
+    }
+
+    input {
+      width: 100%;
+      padding: 13px 14px;
+      border: 1px solid #cfd4dc;
+      border-radius: 6px;
+      font-size: 17px;
+    }
+
+    .options {
+      display: grid;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    button {
+      border: 1px solid #cfd4dc;
+      border-radius: 6px;
+      background: white;
+      color: #1f2937;
+      cursor: pointer;
+      font-size: 17px;
+      min-height: 48px;
+      padding: 12px 14px;
+      text-align: left;
+    }
+
+    button:hover {
+      border-color: #2563eb;
+      background: #eff6ff;
+    }
+
+    .primary {
+      margin-top: 20px;
+      width: 100%;
+      text-align: center;
+      font-weight: 700;
+      color: white;
+      border-color: #2563eb;
+      background: #2563eb;
+    }
+
+    .primary:hover {
+      background: #1d4ed8;
+      color: white;
+    }
+
+    .question {
+      font-size: 22px;
+      line-height: 1.5;
+      margin: 16px 0;
+    }
+
+    .topline {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      color: #667085;
+      font-weight: 700;
+    }
+
+    .timer {
+      color: #b42318;
+    }
+
+    .result {
+      white-space: pre-line;
+      font-size: 18px;
+      line-height: 1.8;
+    }
+
+    .error {
+      margin-top: 10px;
+      color: #b42318;
+      min-height: 22px;
+    }
+
+    @media (max-width: 560px) {
+      .page {
+        align-items: stretch;
+        padding: 0;
+      }
+
+      .panel {
+        min-height: 100vh;
+        border: none;
+        border-radius: 0;
+        box-shadow: none;
+        padding: 22px 16px;
+      }
+
+      h1 {
+        font-size: 26px;
+      }
+
+      .question {
+        font-size: 20px;
+      }
+
+      button {
+        width: 100%;
+        font-size: 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="panel" id="app"></section>
+  </main>
+
+  <script>
+    const questions = [{"question": "单词 apple 的意思是？", "options": {"A": "苹果", "B": "书", "C": "汽车", "D": "老师"}, "answer": "A", "type": "基础单词", "level": "入门"}, {"question": "单词 happy 的意思是？", "options": {"A": "伤心的", "B": "高兴的", "C": "困难的", "D": "安静的"}, "answer": "B", "type": "基础单词", "level": "初级"}, {"question": "单词 important 的意思是？", "options": {"A": "重要的", "B": "便宜的", "C": "遥远的", "D": "安静的"}, "answer": "A", "type": "基础单词", "level": "中级"}, {"question": "单词 efficient 的意思是？", "options": {"A": "高效的", "B": "昂贵的", "C": "危险的", "D": "普通的"}, "answer": "A", "type": "进阶单词", "level": "高中 / B1"}, {"question": "单词 ambiguous 的意思是？", "options": {"A": "清楚的", "B": "模糊不清的", "C": "诚实的", "D": "稳定的"}, "answer": "B", "type": "进阶单词", "level": "大学 / B2"}, {"question": "句子：The teacher asked us to infer the meaning from context. 这里 infer 的意思是？", "options": {"A": "推断", "B": "复制", "C": "拒绝", "D": "测量"}, "answer": "A", "type": "基础语境词义", "level": "高中 / B1"}, {"question": "句子：I need to book a hotel room for tonight. 这里 book 的意思是？", "options": {"A": "书", "B": "预订", "C": "阅读", "D": "记录"}, "answer": "B", "type": "语境词义", "level": "简单语境"}, {"question": "句子：The new policy may affect small businesses. 这里 affect 的意思是？", "options": {"A": "影响", "B": "喜欢", "C": "修理", "D": "隐藏"}, "answer": "A", "type": "语境词义", "level": "雅思 5 左右"}, {"question": "句子：The company decided to address the problem immediately. 这里 address 的意思是？", "options": {"A": "地址", "B": "演讲", "C": "处理，解决", "D": "邮寄"}, "answer": "C", "type": "语境词义", "level": "雅思 6 左右"}, {"question": "句子：The evidence is compelling, but further research is still needed. 这里 compelling 的意思是？", "options": {"A": "无聊的", "B": "有说服力的", "C": "短暂的", "D": "可选的"}, "answer": "B", "type": "语境词义", "level": "雅思 6.5 左右"}, {"question": "句子：The report offers a nuanced account of how migration reshapes local communities. 这里 nuanced 的意思是？", "options": {"A": "粗略的", "B": "有细微差别的", "C": "完全错误的", "D": "重复的"}, "answer": "B", "type": "语境词义", "level": "雅思 7 左右"}, {"question": "句子：The committee reached a tentative conclusion after reviewing the data. 这里 tentative 的意思是？", "options": {"A": "最终确定的", "B": "暂定的，试探性的", "C": "情绪化的", "D": "毫无关系的"}, "answer": "B", "type": "语境词义", "level": "雅思 7.5 左右"}, {"question": "句子：Her criticism was trenchant but not unfair. 这里 trenchant 的意思是？", "options": {"A": "尖锐有力的", "B": "温柔含蓄的", "C": "毫无根据的", "D": "容易遗忘的"}, "answer": "A", "type": "语境词义", "level": "雅思 8 左右"}, {"question": "句子：The speaker gave a lucid explanation of a highly technical issue. 这里 lucid 的意思是？", "options": {"A": "清晰易懂的", "B": "含糊混乱的", "C": "情绪激动的", "D": "过时陈旧的"}, "answer": "A", "type": "高阶语境词义", "level": "雅思 8.5 左右"}, {"question": "句子：The author’s argument is cogent, albeit somewhat elliptical in its treatment of counter-evidence. 这里 elliptical 的意思是？", "options": {"A": "椭圆形的", "B": "冗长重复的", "C": "省略含蓄的", "D": "完全客观的"}, "answer": "C", "type": "高阶语境词义", "level": "雅思 9 挑战"}];
+    const timeLimit = 10;
+    const accessCode = "test2026";
+
+    let accessGranted = false;
+    let userName = "";
+    let gender = "";
+    let currentIndex = 0;
+    let correctCount = 0;
+    let answerTimes = [];
+    let wrongTypeCounts = {};
+    let questionStartTime = 0;
+    let remainingSeconds = timeLimit;
+    let timerId = null;
+
+    const app = document.getElementById("app");
+
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("/sw.js").catch(() => {});
+    }
+
+    function showAccessPage() {
+      stopTimer();
+      app.innerHTML = `
+        <h1>测试水平</h1>
+        <p class="meta">请输入访问码后开始测试。</p>
+        <label for="accessInput">访问码：</label>
+        <input id="accessInput" placeholder="请输入访问码">
+        <button class="primary" onclick="checkAccessCode()">进入测试</button>
+        <div class="error" id="accessError"></div>
+      `;
+      document.getElementById("accessInput").focus();
+    }
+
+    function checkAccessCode() {
+      const accessInput = document.getElementById("accessInput");
+      const accessError = document.getElementById("accessError");
+
+      if (accessInput.value.trim() !== accessCode) {
+        accessError.textContent = "访问码不正确。";
+        return;
+      }
+
+      accessGranted = true;
+      showStartPage();
+    }
+
+    function isValidEnglishName(name) {
+      return /^[A-Za-z ]+$/.test(name.trim());
+    }
+
+    function showStartPage() {
+      if (!accessGranted) {
+        showAccessPage();
+        return;
+      }
+
+      stopTimer();
+      app.innerHTML = `
+        <h1>测试水平</h1>
+        <p class="meta">共 15 道题，难度从基础单词逐步增加到雅思 9 分挑战语境题。手机和电脑浏览器都可以使用。</p>
+        <label for="nameInput">给自己取一个英文名吧：</label>
+        <input id="nameInput" placeholder="例如 Aily">
+        <label>请选择性别：</label>
+        <div class="options">
+          <button onclick="chooseGender('男')">A. 男</button>
+          <button onclick="chooseGender('女')">B. 女</button>
+        </div>
+        <div class="error" id="errorText"></div>
+      `;
+      document.getElementById("nameInput").focus();
+    }
+
+    function chooseGender(selectedGender) {
+      const nameInput = document.getElementById("nameInput");
+      const errorText = document.getElementById("errorText");
+      const name = nameInput.value.trim();
+
+      if (!isValidEnglishName(name)) {
+        errorText.textContent = "英文名只能包含英文字母和空格。";
+        return;
+      }
+
+      userName = name;
+      gender = selectedGender;
+      currentIndex = 0;
+      correctCount = 0;
+      answerTimes = [];
+      wrongTypeCounts = {};
+      showQuestionPage();
+    }
+
+    function showQuestionPage() {
+      stopTimer();
+      const question = questions[currentIndex];
+      remainingSeconds = timeLimit;
+      questionStartTime = Date.now();
+
+      app.innerHTML = `
+        <div class="topline">
+          <div>第 ${currentIndex + 1} / ${questions.length} 题</div>
+          <div class="timer" id="timerText">剩余时间：${remainingSeconds} 秒</div>
+        </div>
+        <p class="meta">题型：${question.type}　难度：${question.level}</p>
+        <div class="question">${question.question}</div>
+        <div class="options">
+          <button onclick="submitAnswer('A')">A. ${question.options.A}</button>
+          <button onclick="submitAnswer('B')">B. ${question.options.B}</button>
+          <button onclick="submitAnswer('C')">C. ${question.options.C}</button>
+          <button onclick="submitAnswer('D')">D. ${question.options.D}</button>
+        </div>
+      `;
+
+      timerId = setInterval(updateTimer, 1000);
+    }
+
+    function updateTimer() {
+      remainingSeconds -= 1;
+      document.getElementById("timerText").textContent = `剩余时间：${remainingSeconds} 秒`;
+
+      if (remainingSeconds <= 0) {
+        submitAnswer(null);
+      }
+    }
+
+    function stopTimer() {
+      if (timerId !== null) {
+        clearInterval(timerId);
+        timerId = null;
+      }
+    }
+
+    function submitAnswer(userAnswer) {
+      stopTimer();
+      const question = questions[currentIndex];
+      let spentTime = (Date.now() - questionStartTime) / 1000;
+
+      if (spentTime > timeLimit) {
+        spentTime = timeLimit;
+      }
+
+      answerTimes.push(spentTime);
+
+      if (userAnswer === question.answer) {
+        correctCount += 1;
+      } else {
+        if (!wrongTypeCounts[question.type]) {
+          wrongTypeCounts[question.type] = 0;
+        }
+        wrongTypeCounts[question.type] += 1;
+      }
+
+      currentIndex += 1;
+
+      if (currentIndex < questions.length) {
+        showQuestionPage();
+      } else {
+        showResultPage();
+      }
+    }
+
+    function getLevel(accuracy) {
+      if (accuracy < 30) return "L0";
+      if (accuracy < 50) return "L1";
+      if (accuracy < 70) return "L2";
+      if (accuracy < 85) return "L3";
+      return "L4";
+    }
+
+    function getWeakTypes() {
+      const entries = Object.entries(wrongTypeCounts);
+      if (entries.length === 0) return [];
+
+      let maxWrong = Math.max(...entries.map(item => item[1]));
+      return entries.filter(item => item[1] === maxWrong).map(item => item[0]);
+    }
+
+    function getSuggestion(level, weakTypes) {
+      const weakText = weakTypes.length > 0 ? weakTypes.join("、") : "暂无明显薄弱题型";
+      const suggestions = {
+        "L0": "建议先学习最常见的基础单词，每天少量反复记忆。",
+        "L1": "建议继续扩大基础词汇量，并用简单例句理解单词。",
+        "L2": "已经有一定词汇基础，建议开始练习一词多义和常见搭配。",
+        "L3": "词义理解较好，建议多读短文，在真实语境中判断单词含义。",
+        "L4": "表现很好，建议阅读雅思 8-9 分段文章，训练抽象词义和复杂语境判断。"
+      };
+      return suggestions[level] + " 当前可重点关注：" + weakText + "。";
+    }
+
+    function showResultPage() {
+      const accuracy = correctCount / questions.length * 100;
+      const averageTime = answerTimes.reduce((a, b) => a + b, 0) / answerTimes.length;
+      const level = getLevel(accuracy);
+      const weakTypes = getWeakTypes();
+      const weakText = weakTypes.length > 0 ? weakTypes.join("、") : "暂无";
+      const suggestion = getSuggestion(level, weakTypes);
+
+      app.innerHTML = `
+        <h1>测试结果</h1>
+        <div class="result">英文名：${userName}
+性别：${gender}
+用户等级：${level}
+正确率：${accuracy.toFixed(1)}%
+平均答题时间：${averageTime.toFixed(1)} 秒
+薄弱题型：${weakText}
+
+下一步学习建议：
+${suggestion}</div>
+        <button class="primary" onclick="showStartPage()">重新测试</button>
+      `;
+    }
+
+    showAccessPage();
+  </script>
+</body>
+</html>
