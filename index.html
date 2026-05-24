@@ -55,12 +55,19 @@
       font-weight: 700;
     }
 
-    input {
+    input,
+    textarea {
       width: 100%;
       padding: 13px 14px;
       border: 1px solid #cfd4dc;
       border-radius: 6px;
       font-size: 17px;
+    }
+
+    textarea {
+      min-height: 130px;
+      resize: vertical;
+      line-height: 1.6;
     }
 
     .options {
@@ -131,6 +138,16 @@
       min-height: 22px;
     }
 
+    .study-box {
+      margin-top: 18px;
+      padding: 16px;
+      border: 1px solid #dbe3ef;
+      border-radius: 8px;
+      background: #f8fafc;
+      line-height: 1.8;
+      white-space: pre-line;
+    }
+
     @media (max-width: 560px) {
       .page {
         align-items: stretch;
@@ -169,6 +186,15 @@
     const questions = [{"question": "单词 apple 的意思是？", "options": {"A": "苹果", "B": "书", "C": "汽车", "D": "老师"}, "answer": "A", "type": "基础单词", "level": "入门"}, {"question": "单词 happy 的意思是？", "options": {"A": "伤心的", "B": "高兴的", "C": "困难的", "D": "安静的"}, "answer": "B", "type": "基础单词", "level": "初级"}, {"question": "单词 borrow 的意思是？", "options": {"A": "借入", "B": "出售", "C": "忘记", "D": "打开"}, "answer": "A", "type": "基础单词", "level": "初中 / A2"}, {"question": "单词 important 的意思是？", "options": {"A": "重要的", "B": "便宜的", "C": "遥远的", "D": "安静的"}, "answer": "A", "type": "基础单词", "level": "中级"}, {"question": "单词 efficient 的意思是？", "options": {"A": "高效的", "B": "昂贵的", "C": "危险的", "D": "普通的"}, "answer": "A", "type": "进阶单词", "level": "高中 / B1"}, {"question": "单词 consequence 的意思是？", "options": {"A": "后果，结果", "B": "玩具", "C": "旅行", "D": "颜色"}, "answer": "A", "type": "进阶单词", "level": "高中 / B1-B2"}, {"question": "单词 ambiguous 的意思是？", "options": {"A": "清楚的", "B": "模糊不清的", "C": "诚实的", "D": "稳定的"}, "answer": "B", "type": "进阶单词", "level": "大学 / B2"}, {"question": "句子：The new policy may affect small businesses. 这里 affect 的意思是？", "options": {"A": "影响", "B": "喜欢", "C": "修理", "D": "隐藏"}, "answer": "A", "type": "基础语境词义", "level": "雅思 5 左右"}, {"question": "句子：The company decided to address the problem immediately. 这里 address 的意思是？", "options": {"A": "地址", "B": "演讲", "C": "处理，解决", "D": "邮寄"}, "answer": "C", "type": "语境词义", "level": "雅思 6 左右"}, {"question": "句子：The evidence is compelling, but further research is still needed. 这里 compelling 的意思是？", "options": {"A": "无聊的", "B": "有说服力的", "C": "短暂的", "D": "可选的"}, "answer": "B", "type": "语境词义", "level": "雅思 6.5 左右"}, {"question": "句子：The report offers a nuanced account of how migration reshapes local communities. 这里 nuanced 的意思是？", "options": {"A": "粗略的", "B": "有细微差别的", "C": "完全错误的", "D": "重复的"}, "answer": "B", "type": "语境词义", "level": "雅思 7 左右"}, {"question": "句子：The committee reached a tentative conclusion after reviewing the data. 这里 tentative 的意思是？", "options": {"A": "最终确定的", "B": "暂定的，试探性的", "C": "情绪化的", "D": "毫无关系的"}, "answer": "B", "type": "语境词义", "level": "雅思 7.5 左右"}, {"question": "句子：Her criticism was trenchant but not unfair. 这里 trenchant 的意思是？", "options": {"A": "尖锐有力的", "B": "温柔含蓄的", "C": "毫无根据的", "D": "容易遗忘的"}, "answer": "A", "type": "语境词义", "level": "雅思 8 左右"}, {"question": "句子：The speaker gave a cogent defence of the proposal despite strong opposition. 这里 cogent 的意思是？", "options": {"A": "有说服力的", "B": "漫不经心的", "C": "毫无关联的", "D": "故意拖延的"}, "answer": "A", "type": "高阶语境词义", "level": "雅思 8.5 左右"}, {"question": "句子：The author's argument is cogent, albeit somewhat elliptical in its treatment of counter-evidence. 这里 elliptical 的意思是？", "options": {"A": "椭圆形的", "B": "冗长重复的", "C": "省略含蓄的", "D": "完全客观的"}, "answer": "C", "type": "高阶语境词义", "level": "雅思 9 挑战"}];
     const timeLimit = 10;
     const accessCode = "test2026";
+    const dailyNewWordCount = 20;
+    const reviewDays = [1, 2, 4, 7, 15, 30];
+    const systemWordBanks = {
+      "L0": ["apple", "book", "water", "food", "school", "teacher", "student", "happy", "sad", "big", "small", "red", "blue", "morning", "night", "family", "friend", "home", "open", "close"],
+      "L1": ["borrow", "travel", "healthy", "important", "because", "usually", "arrive", "practice", "remember", "choose", "different", "problem", "answer", "listen", "careful", "simple", "market", "holiday", "subject", "weather"],
+      "L2": ["efficient", "consequence", "benefit", "require", "support", "increase", "reduce", "compare", "context", "culture", "method", "effect", "improve", "resource", "evidence", "challenge", "average", "process", "response", "specific"],
+      "L3": ["ambiguous", "nuanced", "tentative", "substantial", "interpret", "criteria", "framework", "perspective", "assumption", "sustainable", "evaluate", "implication", "consistent", "capacity", "priority", "innovation", "contrast", "compound", "adapt", "reflect"],
+      "L4": ["cogent", "elliptical", "trenchant", "albeit", "mitigate", "corroborate", "delineate", "paradigm", "conflate", "salient", "pervasive", "equivocal", "exacerbate", "scrutinize", "plausible", "proliferate", "disparity", "inference", "contingent", "synthesis"]
+    };
 
     let accessGranted = false;
     let userName = "";
@@ -180,6 +206,7 @@
     let questionStartTime = 0;
     let remainingSeconds = timeLimit;
     let timerId = null;
+    let lastLevel = "";
 
     const app = document.getElementById("app");
 
@@ -355,6 +382,144 @@
       return suggestions[level] + " 当前可重点关注：" + weakText + "。";
     }
 
+    function getDailyWordPlan(level) {
+      const plans = {
+        "L0": "每天 20 个入门高频词，例如生活、数字、颜色、食物类单词。",
+        "L1": "每天 20 个基础常用词，例如校园、家庭、日常动作类单词。",
+        "L2": "每天 20 个中级核心词，例如常见搭配、一词多义和阅读高频词。",
+        "L3": "每天 20 个进阶学术词，例如抽象名词、态度词和议论文常用词。",
+        "L4": "每天 20 个雅思 8-9 分难度词，例如精确表达、学术写作和复杂语境词。"
+      };
+      return plans[level];
+    }
+
+    function getTodayKey() {
+      const today = new Date();
+      const year = today.getFullYear();
+      const month = String(today.getMonth() + 1).padStart(2, "0");
+      const day = String(today.getDate()).padStart(2, "0");
+      return `${year}-${month}-${day}`;
+    }
+
+    function getStorageKey() {
+      return "wordPlans:" + userName.toLowerCase();
+    }
+
+    function loadWordPlans() {
+      const saved = localStorage.getItem(getStorageKey());
+
+      if (!saved) {
+        return [];
+      }
+
+      try {
+        return JSON.parse(saved);
+      } catch (error) {
+        return [];
+      }
+    }
+
+    function saveWordPlans(plans) {
+      localStorage.setItem(getStorageKey(), JSON.stringify(plans));
+    }
+
+    function daysBetween(startDate, endDate) {
+      const start = new Date(startDate + "T00:00:00");
+      const end = new Date(endDate + "T00:00:00");
+      return Math.round((end - start) / 86400000);
+    }
+
+    function getDueReviewWords() {
+      const today = getTodayKey();
+      const plans = loadWordPlans();
+      let reviewWords = [];
+
+      for (const plan of plans) {
+        const dayGap = daysBetween(plan.date, today);
+
+        if (reviewDays.includes(dayGap)) {
+          reviewWords = reviewWords.concat(plan.words);
+        }
+      }
+
+      return reviewWords;
+    }
+
+    function getSystemWords(level) {
+      return systemWordBanks[level].slice(0, dailyNewWordCount);
+    }
+
+    function formatWords(words) {
+      if (words.length === 0) {
+        return "暂无需要复习的旧词。";
+      }
+
+      return words.join("、");
+    }
+
+    function saveTodayWords(words, source) {
+      const today = getTodayKey();
+      const plans = loadWordPlans().filter(plan => plan.date !== today);
+      plans.push({
+        date: today,
+        level: lastLevel,
+        source: source,
+        words: words
+      });
+      saveWordPlans(plans);
+      showWordPlanPage("今日单词已保存。明天打开本页面时，会提醒你复习今天的 20 个单词。");
+    }
+
+    function useSystemWords() {
+      saveTodayWords(getSystemWords(lastLevel), "系统词库");
+    }
+
+    function useCustomWords() {
+      const input = document.getElementById("customWords");
+      const errorText = document.getElementById("wordError");
+      const words = input.value
+        .split(/[\s,，、]+/)
+        .map(word => word.trim())
+        .filter(word => word.length > 0)
+        .slice(0, dailyNewWordCount);
+
+      if (words.length === 0) {
+        errorText.textContent = "请至少输入 1 个单词。";
+        return;
+      }
+
+      saveTodayWords(words, "自己设置");
+    }
+
+    function showWordPlanPage(message = "") {
+      const reviewWords = getDueReviewWords();
+      const systemWords = getSystemWords(lastLevel);
+      const messageHtml = message ? `<div class="study-box">${message}</div>` : "";
+
+      app.innerHTML = `
+        <h1>今日背词计划</h1>
+        <p class="meta">根据你的等级 ${lastLevel}，每天学习 ${dailyNewWordCount} 个新词。单词数量固定，难度跟随等级变化。</p>
+        <div class="study-box">今日需要复习的旧词：
+${formatWords(reviewWords)}
+
+艾宾浩斯复习节奏：
+第 2 天、第 3 天、第 5 天、第 8 天、第 16 天、第 31 天复习之前学过的单词。</div>
+        <label>选择今天的新词来源：</label>
+        <div class="options">
+          <button onclick="useSystemWords()">A. 使用系统词库：${systemWords.join("、")}</button>
+          <button onclick="document.getElementById('customArea').style.display = 'block'">B. 自己设置单词</button>
+        </div>
+        <div id="customArea" style="display:none">
+          <label for="customWords">请输入今天要背的单词，最多 20 个：</label>
+          <textarea id="customWords" placeholder="例如：apple&#10;borrow&#10;consequence"></textarea>
+          <button class="primary" onclick="useCustomWords()">保存自己设置的单词</button>
+          <div class="error" id="wordError"></div>
+        </div>
+        ${messageHtml}
+        <button class="primary" onclick="showStartPage()">返回测试</button>
+      `;
+    }
+
     function showResultPage() {
       const accuracy = correctCount / questions.length * 100;
       const averageTime = answerTimes.reduce((a, b) => a + b, 0) / answerTimes.length;
@@ -362,6 +527,8 @@
       const weakTypes = getWeakTypes();
       const weakText = weakTypes.length > 0 ? weakTypes.join("、") : "暂无";
       const suggestion = getSuggestion(level, weakTypes);
+      const dailyWordPlan = getDailyWordPlan(level);
+      lastLevel = level;
 
       app.innerHTML = `
         <h1>测试结果</h1>
@@ -371,9 +538,11 @@
 正确率：${accuracy.toFixed(1)}%
 平均答题时间：${averageTime.toFixed(1)} 秒
 薄弱题型：${weakText}
+每日单词计划：${dailyWordPlan}
 
 下一步学习建议：
 ${suggestion}</div>
+        <button class="primary" onclick="showWordPlanPage()">生成今日背词计划</button>
         <button class="primary" onclick="showStartPage()">重新测试</button>
       `;
     }
