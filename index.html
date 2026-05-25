@@ -200,6 +200,7 @@
     let userName = "";
     let gender = "";
     let currentIndex = 0;
+    let quizQuestions = [];
     let correctCount = 0;
     let answerTimes = [];
     let wrongTypeCounts = {};
@@ -279,21 +280,35 @@
       userName = name;
       gender = selectedGender;
       currentIndex = 0;
+      quizQuestions = shuffleQuestions(questions);
       correctCount = 0;
       answerTimes = [];
       wrongTypeCounts = {};
       showQuestionPage();
     }
 
+    function shuffleQuestions(sourceQuestions) {
+      const shuffled = sourceQuestions.slice();
+
+      for (let index = shuffled.length - 1; index > 0; index -= 1) {
+        const randomIndex = Math.floor(Math.random() * (index + 1));
+        const currentQuestion = shuffled[index];
+        shuffled[index] = shuffled[randomIndex];
+        shuffled[randomIndex] = currentQuestion;
+      }
+
+      return shuffled;
+    }
+
     function showQuestionPage() {
       stopTimer();
-      const question = questions[currentIndex];
+      const question = quizQuestions[currentIndex];
       remainingSeconds = timeLimit;
       questionStartTime = Date.now();
 
       app.innerHTML = `
         <div class="topline">
-          <div>第 ${currentIndex + 1} / ${questions.length} 题</div>
+          <div>第 ${currentIndex + 1} / ${quizQuestions.length} 题</div>
           <div class="timer" id="timerText">剩余时间：${remainingSeconds} 秒</div>
         </div>
         <p class="meta">题型：${question.type}　难度：${question.level}</p>
@@ -327,7 +342,7 @@
 
     function submitAnswer(userAnswer) {
       stopTimer();
-      const question = questions[currentIndex];
+      const question = quizQuestions[currentIndex];
       let spentTime = (Date.now() - questionStartTime) / 1000;
 
       if (spentTime > timeLimit) {
@@ -347,7 +362,7 @@
 
       currentIndex += 1;
 
-      if (currentIndex < questions.length) {
+      if (currentIndex < quizQuestions.length) {
         showQuestionPage();
       } else {
         showResultPage();
@@ -521,7 +536,7 @@ ${formatWords(reviewWords)}
     }
 
     function showResultPage() {
-      const accuracy = correctCount / questions.length * 100;
+      const accuracy = correctCount / quizQuestions.length * 100;
       const averageTime = answerTimes.reduce((a, b) => a + b, 0) / answerTimes.length;
       const level = getLevel(accuracy);
       const weakTypes = getWeakTypes();
